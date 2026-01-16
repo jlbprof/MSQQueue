@@ -57,7 +57,7 @@ Schema is initialized from `init.sql` on startup.
 
 ### Container Setup
 1. Build the image: `podman build -t msgqueue .`
-2. Run the container with volume mount: `podman run -d -p 8080:8080 -v $HOME/msgqueue-data:/app/data:Z msgqueue`
+2. Run the container with volume mount: `podman run -d --name msgqueue-go -p 8080:8080 -v $HOME/msgqueue-data:/app/data:Z msgqueue`
    - Data persists in `$HOME/msgqueue-data/messages.db`.
 
 ### Systemd Quadlet Setup
@@ -82,9 +82,10 @@ Quadlet allows running containers as systemd services for persistence across reb
 4. **Check Status**:
    ```bash
    systemctl --user status msgqueue
+   journalctl --user -u msgqueue  # View logs
    ```
 
-The container will auto-restart on failure/boot. Data is mounted to `~/msgqueue-data/`.
+The container (named `msgqueue-go`) will auto-restart on failure/boot. Data is mounted to `~/msgqueue-data/`.
 
 ### Initial Data
 - Test user: `testuser` / `password` (hashes in `init.sql`).

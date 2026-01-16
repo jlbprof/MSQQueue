@@ -4,6 +4,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Container]
+ContainerName=msgqueue-go
 Image=localhost/msgqueue:latest
 PublishPort=8080:8080
 Volume=%h/msgqueue-data:/app/data:Z
