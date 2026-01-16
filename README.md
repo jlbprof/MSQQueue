@@ -60,38 +60,35 @@ Schema is initialized from `init.sql` on startup.
 2. Run the container with volume mount: `podman run -d --name msgqueue-go -p 8080:8080 -v $HOME/msgqueue-data:/app/data:Z msgqueue`
    - Data persists in `$HOME/msgqueue-data/messages.db`.
 
-### Systemd Quadlet Setup
-Quadlet allows running containers as systemd services for persistence across reboots.
+### Systemd Setup
+For persistence across reboots, use a systemd user service generated from Podman.
 
-1. **Install Quadlet** (on Fedora/CentOS/RHEL):
-   ```bash
-   sudo dnf install podman-compose  # Includes quadlet
-   ```
-
-2. **Enable User Lingering** (for persistence across reboots):
+1. **Enable User Lingering** (for persistence across reboots):
    ```bash
    sudo loginctl enable-linger $USER
    ```
    This allows user services to run after logout/reboot.
 
-3. **Place Quadlet File**:
-   - Copy `msgqueue.container` to `~/.config/containers/systemd/`.
-   - Create the directory if needed: `mkdir -p ~/.config/containers/systemd/`
+2. **Generate and Install Service**:
+   - Start the container: `podman run -d --name msgqueue-go -p 8080:8080 -v $HOME/msgqueue-data:/app/data:Z msgqueue`
+   - Generate service: `podman generate systemd --name msgqueue-go --files`
+   - Copy `container-msgqueue-go.service` to `~/.config/systemd/user/`
+   - Edit the service: Change `Type=notify` to `Type=simple`, remove `--sdnotify=conmon`, add `RemainAfterExit=yes`
 
-4. **Reload and Start**:
+3. **Reload and Enable**:
    ```bash
    systemctl --user daemon-reload
-   systemctl --user start msgqueue
+   systemctl --user enable container-msgqueue-go
+   systemctl --user start container-msgqueue-go
    ```
-   Note: Do not use `enable` on quadlet-generated units (they are transient). The `WantedBy=default.target` ensures auto-start on login/reboot.
 
-5. **Check Status**:
+4. **Check Status**:
    ```bash
-   systemctl --user status msgqueue
-   journalctl --user -u msgqueue  # View logs
+   systemctl --user status container-msgqueue-go
+   podman ps  # Verify container is running
    ```
 
-The container (named `msgqueue-go`) will auto-restart on failure/boot. Data is mounted to `~/msgqueue-data/`.
+The container (named `msgqueue-go`) will auto-restart on failure/boot. Data persists in `~/msgqueue-data/messages.db`.
 
 ### Initial Data
 - Test user: `testuser` / `password` (hashes in `init.sql`).
