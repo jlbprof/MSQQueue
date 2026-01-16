@@ -46,8 +46,7 @@ COPY --from=builder /app/ui.html .
 # Change ownership
 RUN chown -R appuser:appuser /app
 
-# Switch to non-root user
-USER appuser
+# Run as root for DB access (volume permissions)
 
 # Expose port
 EXPOSE 8080
