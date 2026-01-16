@@ -6,6 +6,7 @@ msgqueue
 
 # Go downloads
 go*.tar.gz
+go*.tar.gz.*
 
 # Go build cache
 .cache/
