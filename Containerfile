@@ -1,5 +1,5 @@
 # Use a lightweight Go base image
-FROM golang:1.24-alpine AS builder
+FROM docker.io/library/golang:1.24-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY . .
 RUN go build -o msgqueue .
 
 # Final stage
-FROM alpine:latest
+FROM docker.io/library/alpine:latest
 
 # Install ca-certificates for any HTTPS needs (optional)
 RUN apk --no-cache add ca-certificates
