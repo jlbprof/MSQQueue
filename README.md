@@ -48,11 +48,43 @@ Schema is initialized from `init.sql` on startup.
 ### Prerequisites
 - Go 1.24+ (upgraded during setup).
 - SQLite (included with Go's driver).
+- Podman (or Docker with alias).
 
-### Setup
+### Setup (Local)
 1. Clone/download the project.
 2. Run `go mod tidy` to install dependencies.
 3. Build: `go build -o msgqueue .`
+
+### Container Setup
+1. Build the image: `podman build -t msgqueue .`
+2. Run the container with volume mount: `podman run -d -p 8080:8080 -v $HOME/msgqueue-data:/app/data:Z msgqueue`
+   - Data persists in `$HOME/msgqueue-data/messages.db`.
+
+### Systemd Quadlet Setup
+Quadlet allows running containers as systemd services for persistence across reboots.
+
+1. **Install Quadlet** (on Fedora/CentOS/RHEL):
+   ```bash
+   sudo dnf install podman-compose  # Includes quadlet
+   ```
+
+2. **Place Quadlet File**:
+   - Copy `msgqueue.container` to `~/.config/containers/systemd/`.
+   - Create the directory if needed: `mkdir -p ~/.config/containers/systemd/`
+
+3. **Reload and Start**:
+   ```bash
+   systemctl --user daemon-reload
+   systemctl --user start msgqueue
+   systemctl --user enable msgqueue  # For auto-start on boot
+   ```
+
+4. **Check Status**:
+   ```bash
+   systemctl --user status msgqueue
+   ```
+
+The container will auto-restart on failure/boot. Data is mounted to `~/msgqueue-data/`.
 
 ### Initial Data
 - Test user: `testuser` / `password` (hashes in `init.sql`).

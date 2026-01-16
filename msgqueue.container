@@ -1,0 +1,15 @@
+[Unit]
+Description=Message Queue API Container
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=localhost/msgqueue:latest
+PublishPort=8080:8080
+Volume=%h/msgqueue-data:/app/data:Z
+Environment=DB_PATH=/app/data/messages.db
+Exec=/app/msgqueue
+Label=io.containers.autoupdate=registry
+
+[Install]
+WantedBy=default.target

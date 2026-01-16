@@ -13,7 +13,11 @@ type Queue struct {
 }
 
 func NewQueue() (*Queue, error) {
-	db, err := sql.Open("sqlite3", "messages.db")
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		dbPath = "messages.db"
+	}
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return nil, err
 	}
