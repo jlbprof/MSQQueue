@@ -68,18 +68,24 @@ Quadlet allows running containers as systemd services for persistence across reb
    sudo dnf install podman-compose  # Includes quadlet
    ```
 
-2. **Place Quadlet File**:
+2. **Enable User Lingering** (for persistence across reboots):
+   ```bash
+   sudo loginctl enable-linger $USER
+   ```
+   This allows user services to run after logout/reboot.
+
+3. **Place Quadlet File**:
    - Copy `msgqueue.container` to `~/.config/containers/systemd/`.
    - Create the directory if needed: `mkdir -p ~/.config/containers/systemd/`
 
-3. **Reload and Start**:
+4. **Reload and Start**:
    ```bash
    systemctl --user daemon-reload
    systemctl --user start msgqueue
-   systemctl --user enable msgqueue  # For auto-start on boot
    ```
+   Note: Do not use `enable` on quadlet-generated units (they are transient). The `WantedBy=default.target` ensures auto-start on login/reboot.
 
-4. **Check Status**:
+5. **Check Status**:
    ```bash
    systemctl --user status msgqueue
    journalctl --user -u msgqueue  # View logs
