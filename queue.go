@@ -74,16 +74,16 @@ func (q *Queue) GetAll(afterID int, limit int) ([]models.Message, error) {
 	}
 	defer rows.Close()
 
-	var messages []models.Message
-	for rows.Next() {
-		var msg models.Message
-		err := rows.Scan(&msg.ID, &msg.Content, &msg.Timestamp)
-		if err != nil {
-			return nil, err
-		}
-		messages = append(messages, msg)
-	}
-	return messages, rows.Err()
+    messages := make([]models.Message, 0)
+    for rows.Next() {
+        var msg models.Message
+        err := rows.Scan(&msg.ID, &msg.Content, &msg.Timestamp)
+        if err != nil {
+            return nil, err
+        }
+        messages = append(messages, msg)
+    }
+    return messages, rows.Err()
 }
 
 func (q *Queue) DeleteOlderThan(days int) (int, error) {

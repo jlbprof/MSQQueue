@@ -59,6 +59,8 @@
                     const data = await response.json();
                     apiKey = data.apiKey;
                     localStorage.setItem('apiKey', apiKey);
+                    lastId = 0;
+                    localStorage.setItem('lastId', '0');
                     updateAuthStatus();
                     alert('Logged in');
                 } else {
@@ -77,7 +79,9 @@
                     headers: { 'Authorization': `Bearer ${apiKey}` }
                 });
                 localStorage.removeItem('apiKey');
+                localStorage.removeItem('lastId');
                 apiKey = null;
+                lastId = 0;
                 updateAuthStatus();
                 alert('Logged out');
             } catch (err) {
@@ -135,26 +139,33 @@
         async function refreshMessages() {
             if (!apiKey) return alert('Not logged in');
             const url = lastId > 0 ? `/messages?after_id=${lastId}` : '/messages?limit=10';
+            console.log('Refresh URL:', url, 'lastId:', lastId);
             try {
                 const response = await fetch(url, {
                     headers: { 'Authorization': `Bearer ${apiKey}` }
                 });
+                console.log('Response OK:', response.ok, 'Status:', response.status);
                 if (response.ok) {
                     const messages = await response.json();
+                    console.log('Messages:', messages);
                     displayMessages(messages);
-                    if (messages.length > 0) {
+                    if (messages && messages.length > 0) {
                         lastId = Math.max(...messages.map(m => m.id));
                         localStorage.setItem('lastId', lastId);
+                        console.log('New lastId:', lastId);
                     }
                 } else {
                     alert('Failed to refresh messages');
                 }
             } catch (err) {
+                console.error('Fetch error:', err);
                 alert('Error: ' + err.message);
             }
         }
 
         function displayMessages(messages) {
+            console.log('Displaying messages:', messages);
+            if (!messages) messages = [];
             const div = document.getElementById('messages');
             div.innerHTML = messages.map(m => `<p>ID: ${m.id}, Content: ${m.content}, Time: ${m.timestamp}</p>`).join('');
         }
