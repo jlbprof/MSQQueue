@@ -1,0 +1,15 @@
+# Binaries
+msgqueue
+
+# Database
+*.db
+
+# Go downloads
+go*.tar.gz
+
+# Go build cache
+.cache/
+
+# OS generated files
+.DS_Store
+Thumbs.db

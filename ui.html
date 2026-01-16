@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Queue UI</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin-bottom: 20px; border: 1px solid #ccc; padding: 10px; }
+        input, button { margin: 5px; }
+        #messages { max-height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Message Queue UI</h1>
+
+    <div class="section">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <button onclick="logout()">Logout</button>
+        <p id="authStatus">Not logged in</p>
+    </div>
+
+    <div class="section">
+        <h2>Add Message</h2>
+        <input type="text" id="content" placeholder="Valid JSON content">
+        <button onclick="addMessage()">Add</button>
+    </div>
+
+    <div class="section">
+        <h2>Query Messages</h2>
+        <input type="number" id="afterId" placeholder="After ID (optional)">
+        <input type="number" id="limit" placeholder="Limit (optional)">
+        <button onclick="queryMessages()">Query</button>
+        <button onclick="refreshMessages()">Refresh Recent</button>
+        <div id="messages"></div>
+    </div>
+
+    <script>
+        let apiKey = localStorage.getItem('apiKey');
+        let lastId = localStorage.getItem('lastId') || 0;
+
+        function updateAuthStatus() {
+            document.getElementById('authStatus').textContent = apiKey ? 'Logged in' : 'Not logged in';
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    apiKey = data.apiKey;
+                    localStorage.setItem('apiKey', apiKey);
+                    updateAuthStatus();
+                    alert('Logged in');
+                } else {
+                    alert('Login failed');
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function logout() {
+            if (!apiKey) return alert('Not logged in');
+            try {
+                await fetch('/logout', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                });
+                localStorage.removeItem('apiKey');
+                apiKey = null;
+                updateAuthStatus();
+                alert('Logged out');
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function addMessage() {
+            if (!apiKey) return alert('Not logged in');
+            const content = document.getElementById('content').value;
+            try {
+                const response = await fetch('/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({ content })
+                });
+                if (response.ok) {
+                    alert('Message added');
+                    refreshMessages();
+                } else {
+                    alert('Failed to add message');
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function queryMessages() {
+            if (!apiKey) return alert('Not logged in');
+            const afterId = document.getElementById('afterId').value;
+            const limit = document.getElementById('limit').value;
+            let url = '/messages';
+            const params = [];
+            if (afterId) params.push(`after_id=${afterId}`);
+            if (limit) params.push(`limit=${limit}`);
+            if (params.length) url += '?' + params.join('&');
+            try {
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                });
+                if (response.ok) {
+                    const messages = await response.json();
+                    displayMessages(messages);
+                } else {
+                    alert('Failed to query messages');
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function refreshMessages() {
+            if (!apiKey) return alert('Not logged in');
+            const url = lastId > 0 ? `/messages?after_id=${lastId}` : '/messages?limit=10';
+            try {
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                });
+                if (response.ok) {
+                    const messages = await response.json();
+                    displayMessages(messages);
+                    if (messages.length > 0) {
+                        lastId = Math.max(...messages.map(m => m.id));
+                        localStorage.setItem('lastId', lastId);
+                    }
+                } else {
+                    alert('Failed to refresh messages');
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        function displayMessages(messages) {
+            const div = document.getElementById('messages');
+            div.innerHTML = messages.map(m => `<p>ID: ${m.id}, Content: ${m.content}, Time: ${m.timestamp}</p>`).join('');
+        }
+
+        updateAuthStatus();
+    </script>
+</body>
+</html>
