@@ -161,3 +161,7 @@ curl http://localhost:8080/messages -H "Authorization: Bearer $KEY"
 - Database (`messages.db`) is created locally and not committed.
 - For production, add HTTPS, stronger hashing (bcrypt), and user management.
 - Built for internal use; scale as needed.
+
+## Future Enhancements
+- **Add New User Endpoint**: Implement a server-side API endpoint (admin-only) to create new users programmatically.
+- **Password Change in UI**: Add functionality to the web interface allowing users to change their passwords securely.
