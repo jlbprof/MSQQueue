@@ -57,7 +57,7 @@ Schema is initialized from `init.sql` on startup.
 
 ### Container Setup
 1. Build the image: `podman build -t msgqueue .`
-2. Run the container with volume mount: `podman run -d --name msgqueue-go -p 8080:8080 -v $HOME/msgqueue-data:/app/data:Z msgqueue`
+2. Run the container with volume mount: `podman run -d --name msgqueue-go -p 8080:8080 -v $HOME/msgqueue-data:/app/data msgqueue`
    - Data persists in `$HOME/msgqueue-data/messages.db`.
 
 ### Systemd Setup
