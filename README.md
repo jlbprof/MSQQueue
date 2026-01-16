@@ -70,7 +70,7 @@ For persistence across reboots, use a systemd user service generated from Podman
    This allows user services to run after logout/reboot.
 
 2. **Generate and Install Service**:
-   - Start the container: `podman run -d --name msgqueue-go -p 8080:8080 -v $HOME/msgqueue-data:/app/data:Z msgqueue`
+   - Start the container: `podman run -d --name msgqueue-go -p 8080:8080 -v $HOME/msgqueue-data:/app/data localhost/msgqueue:latest`
    - Generate service: `podman generate systemd --name msgqueue-go --files`
    - Copy `container-msgqueue-go.service` to `~/.config/systemd/user/`
    - Edit the service: Change `Type=notify` to `Type=simple`, remove `--sdnotify=conmon`, add `RemainAfterExit=yes`
