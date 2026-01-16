@@ -1,0 +1,6 @@
+MSGQueue project using opencode with backend grok-code.
+
+I was very much amazed at what happened.  I am an old school developer with 40+ years experience.
+
+I did not write a line of code, but instead used my knowledge and deep knowledge of what I wanted to created.  The AI had a lot of problems when I started the containerization portion, which has been a problem for awhile, I spend more time working out the kinks of containerization then I do on the program itself. A lot of the containerzation problems are related to using systemd in user mode to make sure that the container is started on reboot with appropriate persistance of the database.
+
