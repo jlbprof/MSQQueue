@@ -7,7 +7,7 @@ Wants=network-online.target
 ContainerName=msgqueue-go
 Image=localhost/msgqueue:latest
 PublishPort=8080:8080
-Volume=%h/msgqueue-data:/app/data:Z
+Volume=%h/msgqueue-data:/app/data
 Environment=DB_PATH=/app/data/messages.db
 Label=io.containers.autoupdate=registry
 
