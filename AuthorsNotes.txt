@@ -1,6 +1,6 @@
-MSGQueue project using opencode with backend grok-code.
+MSGQueue Project: Leveraging OpenCode with Grok Backend
 
-I was very much amazed at what happened.  I am an old school developer with 40+ years experience.
+I was profoundly amazed by the outcome of this project. As an old-school developer with over 40 years of experience, I approached this endeavor with traditional expectations.
 
-I did not write a line of code, but instead used my knowledge and deep knowledge of what I wanted to created.  The AI had a lot of problems when I started the containerization portion, which has been a problem for awhile, I spend more time working out the kinks of containerization then I do on the program itself. A lot of the containerzation problems are related to using systemd in user mode to make sure that the container is started on reboot with appropriate persistance of the database.
+Remarkably, I did not write a single line of code myself. Instead, I relied on my extensive knowledge and clear vision of the desired system to guide the AI assistant. The AI encountered significant challenges during the containerization phase—a persistent issue I've faced before, where resolving container setup often consumes more time than developing the core application itself. Many of these containerization difficulties stemmed from configuring systemd in user mode to ensure the container restarts on reboot while maintaining proper database persistence.
 
