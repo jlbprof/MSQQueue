@@ -5,9 +5,13 @@ import (
 	"log"
 	"msgqueue/handlers"
 	"net/http"
+	"syscall"
 )
 
 func main() {
+	// Nice the process to lower priority
+	syscall.Setpriority(syscall.PRIO_PROCESS, 0, 10)
+
 	queue, err := NewQueue()
 	if err != nil {
 		log.Fatal("Failed to initialize queue:", err)
